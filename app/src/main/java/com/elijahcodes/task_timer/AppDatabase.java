@@ -52,7 +52,7 @@ class AppDatabase extends SQLiteOpenHelper{
                 + TasksContract.Columns.TASKS_SORTORDER + " INTEGER);";
 
         Log.d(TAG, "onCreate: sSQL");
-        db.execSQL(sSQL);
+        sqLiteDatabase.execSQL(sSQL);
 
         Log.d(TAG, "onCreate: ends");
     }
