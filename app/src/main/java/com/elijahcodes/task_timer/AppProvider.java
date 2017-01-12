@@ -2,6 +2,7 @@ package com.elijahcodes.task_timer;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -14,9 +15,27 @@ import android.support.annotation.Nullable;
 
 public class AppProvider extends ContentProvider {
     private static final String TAG = "AppProvider";
+
     private AppDatabase mOpenHelper;
+
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
+
     static final String CONTENT_AUTHORITY = "com.elijahcodes.task_timer.provider";
     public static final Uri CONTENT_AUTHORITY_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
+    private static final int TASKS = 100;
+    private static final int TASKS_ID = 101;
+
+    private static final int TIMINGS = 200;
+    private static final int TIMINGS_ID = 201;
+
+    /*
+    private static final int TASK_TIMINGS = 300;
+    private static final int TASK_TIMINGS_ID = 301;
+     */
+
+    private static final int TASK_DURATIONS = 400;
+    private static final int TASK_DURATIONS_ID = 401;
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
