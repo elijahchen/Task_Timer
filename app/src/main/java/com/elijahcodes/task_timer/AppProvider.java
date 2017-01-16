@@ -40,14 +40,22 @@ public class AppProvider extends ContentProvider {
     private static final int TASK_DURATIONS = 400;
     private static final int TASK_DURATIONS_ID = 401;
 
-    private static UriMatcher buildUriMatcher(){
+    private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+
+        //  eg. content://com.timbuchalka.tasktimer.provider/Tasks
         matcher.addURI(CONTENT_AUTHORITY, TasksContract.TABLE_NAME, TASKS);
-        matcher.addURI(CONTENT_AUTHORITY, TasksContract.TABLE_NAME + "/#", TIMINGS_ID);
+        // e.g. content://com.timbuchalka.tasktimer.provider/Tasks/8
+        matcher.addURI(CONTENT_AUTHORITY, TasksContract.TABLE_NAME + "/#", TASKS_ID);
+
+//        matcher.addURI(CONTENT_AUTHORITY, TimingsContract.TABLE_NAME, TIMINGS);
+//        matcher.addURI(CONTENT_AUTHORITY, TimingsContract.TABLE_NAME + "/#", TIMINGS_ID);
+//
+//        matcher.addURI(CONTENT_AUTHORITY, DurationsContract.TABLE_NAME, TASK_DURATIONS);
+//        matcher.addURI(CONTENT_AUTHORITY, DurationsContract.TABLE_NAME + "/#", TASK_DURATIONS_ID);
 
         return matcher;
     }
-
     @Override
     public boolean onCreate() {
         mOpenHelper = AppDatabase.getInstance(getContext());
@@ -57,16 +65,17 @@ public class AppProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(TAG, "query: caled with URI " + uri);
+        Log.d(TAG, "query: called with URI " + uri);
         final int match = sUriMatcher.match(uri);
         Log.d(TAG, "query: match is " + match);
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
-        switch (match) {
+        switch(match) {
             case TASKS:
                 queryBuilder.setTables(TasksContract.TABLE_NAME);
                 break;
+
             case TASKS_ID:
                 queryBuilder.setTables(TasksContract.TABLE_NAME);
                 long taskId = TasksContract.getTaskId(uri);
@@ -84,17 +93,18 @@ public class AppProvider extends ContentProvider {
 //                break;
 //
 //            case TASK_DURATIONS:
-//                queryBuilder.setTables(TimingsContract.TABLE_NAME);
+//                queryBuilder.setTables(DurationsContract.TABLE_NAME);
 //                break;
 
 //            case TASK_DURATIONS_ID:
 //                queryBuilder.setTables(DurationsContract.TABLE_NAME);
-//                long durationId = DurationsContract.getDurationId(uri);
+//                long durationId = DurationsContract.getDuration(uri);
 //                queryBuilder.appendWhere(DurationsContract.Columns._ID + " = " + durationId);
 //                break;
 
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
+
         }
 
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
@@ -110,7 +120,39 @@ public class AppProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        Log.d(TAG, "insert: Entering insert, called with uri:" + uri);
+        final int match = sUriMatcher.match(uri);
+        Log.d(TAG, "insert: match is " + match);
+
+        final SQLiteDatabase db;
+        Uri returnUri;
+        long recordId;
+        switch(match){
+            case TASKS:
+                db = mOpenHelper.getWritableDatabase();
+                recordId = db.insert(TasksContract.TABLE_NAME, null, values);
+                if(recordId >= 0){
+                    returnUri = TasksContract.buildTaskUri(recordId);
+                } else {
+                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
+                }
+                break;
+
+            case TIMINGS:
+//                db = mOpenHelper.getWritableDatabase();
+//                recordId = db.insert(TimingsContract.Timings.buildTimingUri(recordId));
+//                if(recordId >= 0){
+//                    returnUri = TimingsContract.Timings.buildTimingUri(recordId);
+//                } else {
+//                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
+//                }
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown uri:" + uri);
+        }
+        Log.d(TAG, "insert: Exiting insert, returnring " + returnUri);
+        return returnUri;
     }
 
     @Override
