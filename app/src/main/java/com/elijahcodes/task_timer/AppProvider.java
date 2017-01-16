@@ -49,13 +49,9 @@ public class AppProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
-    }
-
-    @Override
     public boolean onCreate() {
-        return false;
+        mOpenHelper = AppDatabase.getInstance(getContext());
+        return true;
     }
 
     @Nullable
@@ -115,6 +111,11 @@ public class AppProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         return null;
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        return 0;
     }
 
     @Override
