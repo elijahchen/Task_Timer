@@ -1,6 +1,10 @@
 package com.elijahcodes.task_timer;
 
+import android.content.ContentUris;
+import android.net.Uri;
 import android.provider.BaseColumns;
+
+import static com.elijahcodes.task_timer.AppProvider.CONTENT_AUTHORITY;
 
 /**
  * Created by Elijah on 12/30/2016.
@@ -21,4 +25,18 @@ public class TasksContract {
             // private constructor to prevent instantiation
         }
     }
+
+    public static final Uri CONTENT_URI = Uri.withAppendedPath(AppProvider.CONTENT_AUTHORITY_URI, TABLE_NAME);
+
+    static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + CONTENT_AUTHORITY + "." + TABLE_NAME;
+    static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd." + CONTENT_AUTHORITY + "." + TABLE_NAME;
+
+    static Uri buildTaskUrl(long taskId){
+        return ContentUris.withAppendedId(CONTENT_URI, taskId);
+    }
+
+    static long getTaskId(Uri uri){
+        return ContentUris.parseId(uri);
+    }
+
 }
