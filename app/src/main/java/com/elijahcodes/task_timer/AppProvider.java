@@ -157,11 +157,58 @@ public class AppProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+
         return 0;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        Log.d(TAG, "update: Called with uri " + uri);
+        final int match = sUriMatcher.match(uri);
+        Log.d(TAG, "update: match is " + match);
+
+        final SQLiteDatabase db;
+        int count;
+
+        String selectionCriteria;
+
+        switch(match){
+            case TASKS:
+                db = mOpenHelper.getReadableDatabase();
+                count = db.update(TasksContract.TABLE_NAME, values, selection, selectionArgs);
+                break;
+
+            case TASKS_ID:
+                db = mOpenHelper.getReadableDatabase();
+                long taskId = TasksContract.getTaskId(uri);
+                selectionCriteria = TasksContract.Columns._ID + " = " + taskId;
+
+                if((selection != null) && (selection.length() > 0)){
+                    selectionCriteria += " And (" + selection + ")";
+                }
+                count = db.update(TasksContract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+                break;
+
+//            case TIMINGS:
+//                db = mOpenHelper.getReadableDatabase();
+//                count = db.update(TimingsContract.TABLE_NAME, values, selection, selectionArgs);
+//                break;
+//
+//            case TIMINGS_ID:
+//                db = mOpenHelper.getReadableDatabase();
+//                long timingsId = TimingsContract.getTaskId(uri);
+//                selectionCriteria = TimingsContract.Columns._ID + " = " + TimingsContract;
+//
+//                if((selection != null) && (selection.length() > 0)){
+//                    selectionCriteria += " And (" + selection + ")";
+//                }
+//                count = db.update(TimingsContract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+//                break;
+
+             default:
+                throw new IllegalArgumentException("Unknown uri: " + uri);
+        }
+        Log.d(TAG, "update: Exiting update returning " + count);
+        return count;
     }
 }
