@@ -120,18 +120,20 @@ public class AppProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Log.d(TAG, "insert: Entering insert, called with uri:" + uri);
+        Log.d(TAG, "Entering insert, called with uri:" + uri);
         final int match = sUriMatcher.match(uri);
-        Log.d(TAG, "insert: match is " + match);
+        Log.d(TAG, "match is " + match);
 
         final SQLiteDatabase db;
+
         Uri returnUri;
         long recordId;
-        switch(match){
+
+        switch(match) {
             case TASKS:
                 db = mOpenHelper.getWritableDatabase();
                 recordId = db.insert(TasksContract.TABLE_NAME, null, values);
-                if(recordId >= 0){
+                if(recordId >=0) {
                     returnUri = TasksContract.buildTaskUri(recordId);
                 } else {
                     throw new android.database.SQLException("Failed to insert into " + uri.toString());
@@ -141,27 +143,123 @@ public class AppProvider extends ContentProvider {
             case TIMINGS:
 //                db = mOpenHelper.getWritableDatabase();
 //                recordId = db.insert(TimingsContract.Timings.buildTimingUri(recordId));
-//                if(recordId >= 0){
+//                if(recordId >=0) {
 //                    returnUri = TimingsContract.Timings.buildTimingUri(recordId);
 //                } else {
 //                    throw new android.database.SQLException("Failed to insert into " + uri.toString());
 //                }
-                break;
+//                break;
 
             default:
-                throw new IllegalArgumentException("Unknown uri:" + uri);
+                throw new IllegalArgumentException("Unknown uri: " + uri);
         }
+<<<<<<< HEAD
         Log.d(TAG, "insert: Exiting insert, returning " + returnUri);
+=======
+        Log.d(TAG, "Exiting insert, returning " + returnUri);
+>>>>>>> 1f515a9b827d374eea2852092bf45974eddba0bf
         return returnUri;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        Log.d(TAG, "delete: Called with uri " + uri);
+        final int match = sUriMatcher.match(uri);
+        Log.d(TAG, "delete: match is " + match);
+
+        final SQLiteDatabase db;
+        int count;
+
+        String selectionCriteria;
+
+        switch(match){
+            case TASKS:
+                db = mOpenHelper.getReadableDatabase();
+                count = db.delete(TasksContract.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case TASKS_ID:
+                db = mOpenHelper.getReadableDatabase();
+                long taskId = TasksContract.getTaskId(uri);
+                selectionCriteria = TasksContract.Columns._ID + " = " + taskId;
+
+                if((selection != null) && (selection.length() > 0)){
+                    selectionCriteria += " And (" + selection + ")";
+                }
+                count = db.delete(TasksContract.TABLE_NAME, selectionCriteria, selectionArgs);
+                break;
+
+//            case TIMINGS:
+//                db = mOpenHelper.getReadableDatabase();
+//                count = db.delete(TimingsContract.TABLE_NAME, selection, selectionArgs);
+//                break;
+//
+//            case TIMINGS_ID:
+//                db = mOpenHelper.getReadableDatabase();
+//                long timingsId = TimingsContract.getTaskId(uri);
+//                selectionCriteria = TimingsContract.Columns._ID + " = " + TimingsContract;
+//
+//                if((selection != null) && (selection.length() > 0)){
+//                    selectionCriteria += " And (" + selection + ")";
+//                }
+//                count = db.delete(TimingsContract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+//                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown uri: " + uri);
+        }
+        Log.d(TAG, "delete: Exiting update returning " + count);
+        return count;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        Log.d(TAG, "update: Called with uri " + uri);
+        final int match = sUriMatcher.match(uri);
+        Log.d(TAG, "update: match is " + match);
+
+        final SQLiteDatabase db;
+        int count;
+
+        String selectionCriteria;
+
+        switch(match){
+            case TASKS:
+                db = mOpenHelper.getReadableDatabase();
+                count = db.update(TasksContract.TABLE_NAME, values, selection, selectionArgs);
+                break;
+
+            case TASKS_ID:
+                db = mOpenHelper.getReadableDatabase();
+                long taskId = TasksContract.getTaskId(uri);
+                selectionCriteria = TasksContract.Columns._ID + " = " + taskId;
+
+                if((selection != null) && (selection.length() > 0)){
+                    selectionCriteria += " And (" + selection + ")";
+                }
+                count = db.update(TasksContract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+                break;
+
+//            case TIMINGS:
+//                db = mOpenHelper.getReadableDatabase();
+//                count = db.update(TimingsContract.TABLE_NAME, values, selection, selectionArgs);
+//                break;
+//
+//            case TIMINGS_ID:
+//                db = mOpenHelper.getReadableDatabase();
+//                long timingsId = TimingsContract.getTaskId(uri);
+//                selectionCriteria = TimingsContract.Columns._ID + " = " + TimingsContract;
+//
+//                if((selection != null) && (selection.length() > 0)){
+//                    selectionCriteria += " And (" + selection + ")";
+//                }
+//                count = db.update(TimingsContract.TABLE_NAME, values, selectionCriteria, selectionArgs);
+//                break;
+
+             default:
+                throw new IllegalArgumentException("Unknown uri: " + uri);
+        }
+        Log.d(TAG, "update: Exiting update returning " + count);
+        return count;
     }
 }
