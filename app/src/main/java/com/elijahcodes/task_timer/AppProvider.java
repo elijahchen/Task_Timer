@@ -151,7 +151,7 @@ public class AppProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown uri:" + uri);
         }
-        Log.d(TAG, "insert: Exiting insert, returnring " + returnUri);
+        Log.d(TAG, "insert: Exiting insert, returning " + returnUri);
         return returnUri;
     }
 
